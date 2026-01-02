@@ -2,6 +2,7 @@
 
 [![Kotlin](https://img.shields.io/badge/kotlin-1.9.22-blue.svg)](https://kotlinlang.org/)
 [![Gradle](https://img.shields.io/badge/gradle-8.5-green.svg)](https://gradle.org/)
+[![Java](https://img.shields.io/badge/java-8%2B-orange.svg)](https://www.oracle.com/java/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 A modern Kotlin library for calculating accurate Islamic prayer times for major cities in Iran using astronomical algorithms.
@@ -16,6 +17,7 @@ A modern Kotlin library for calculating accurate Islamic prayer times for major 
 - 🎯 Configurable calculation parameters (Fajr/Isha angles, Asr shadow factor)
 - 📦 Clean, idiomatic Kotlin code with proper package structure
 - 🏗️ Modern Gradle build configuration
+- ✅ Compatible with Java 8+ (no special runtime requirements)
 
 ## 🏙️ Supported Cities
 
@@ -34,9 +36,11 @@ A modern Kotlin library for calculating accurate Islamic prayer times for major 
 
 ## 📋 Requirements
 
-- Kotlin 1.9.22 or higher
-- Java 17 or higher
-- Gradle 8.5 or higher (wrapper included)
+- **Kotlin:** 1.9.22 or higher
+- **Java:** 8 or higher (JRE/JDK)
+- **Gradle:** 8.5 or higher (wrapper included)
+
+> ✅ **No special Java version required!** Works with any Java 8+ installation.
 
 ## 🚀 Quick Start
 
