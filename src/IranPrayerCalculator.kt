@@ -91,9 +91,13 @@ class IranPrayerCalculator(
     }
 
     private fun hourAngleAsr(k: Double, phi: Double, dec: Double): Double {
-        // k = 1 for Shafii, 2 for Hanafi
-        val angle = -atan(1.0 / (k + tan(abs(phi - dec))))
-        val cosH = (sin(angle) - sin(phi) * sin(dec)) / (cos(phi) * cos(dec))
+        // k = 1 for Shafii (standard), 2 for Hanafi
+        // Calculate the solar altitude angle when shadow length = k * object height
+        val tanAlt = 1.0 / (k + tan(abs(phi - dec)))
+        val altitude = atan(tanAlt)
+        
+        // Now calculate hour angle for this altitude
+        val cosH = (sin(altitude) - sin(phi) * sin(dec)) / (cos(phi) * cos(dec))
         return acos(cosH.coerceIn(-1.0, 1.0))
     }
 
