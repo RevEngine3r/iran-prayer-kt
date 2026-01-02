@@ -23,7 +23,7 @@ class PrayerTimeCalculator(
     private val ishaAngle: Double = 14.0,
     private val sunriseSunsetAltitude: Double = -0.833,
     private val asrShadowFactor: Double = 1.0,
-    private val maghribOffsetMinutes: Long = 19
+    private val maghribOffsetMinutes: Long = 21  // Adjusted from 19 to 21
 ) {
     /**
      * Computes prayer times for a specific date and location.
@@ -41,7 +41,8 @@ class PrayerTimeCalculator(
         timeZone: String
     ): PrayerTimes {
         val zoneId = ZoneId.of(timeZone)
-        val midnightBase = date.plusDays(1).atStartOfDay(zoneId)
+        // Use current date's midnight for timezone offset calculation
+        val midnightBase = date.atStartOfDay(zoneId)
         val tzOffsetMinutes = midnightBase.offset.totalSeconds / 60
 
         val julianDay = calculateJulianDay(date)
@@ -111,8 +112,20 @@ class PrayerTimeCalculator(
         val rightAscension = atan2(cos(obliquity) * sin(eclipticLongitude), cos(eclipticLongitude))
         val declination = asin(sin(obliquity) * sin(eclipticLongitude))
         
-        val rightAscensionDegrees = Math.toDegrees(rightAscension) % 360
-        val equationOfTime = 4.0 * (((meanLongitude % 360) - rightAscensionDegrees + 540) % 360 - 180)
+        // Normalize right ascension to 0-360 range
+        var rightAscensionDegrees = Math.toDegrees(rightAscension)
+        if (rightAscensionDegrees < 0) {
+            rightAscensionDegrees += 360
+        }
+        
+        // Normalize mean longitude
+        val normalizedMeanLongitude = ((meanLongitude % 360) + 360) % 360
+        
+        // Calculate equation of time with proper angle wrapping
+        var eqTimeDelta = normalizedMeanLongitude - rightAscensionDegrees
+        if (eqTimeDelta > 180) eqTimeDelta -= 360
+        if (eqTimeDelta < -180) eqTimeDelta += 360
+        val equationOfTime = 4.0 * eqTimeDelta
         
         return Pair(declination, equationOfTime)
     }
@@ -138,6 +151,7 @@ class PrayerTimeCalculator(
 
     /**
      * Converts UTC minutes to local time for a specific date and timezone.
+     * Uses proper rounding (round half up) to avoid systematic bias.
      */
     private fun convertToLocalTime(
         date: LocalDate,
@@ -146,7 +160,9 @@ class PrayerTimeCalculator(
         zoneId: ZoneId
     ): ZonedDateTime {
         val totalMinutes = utcMinutes + timezoneOffsetMinutes
-        val totalSeconds = (totalMinutes * 60.0).roundToInt()
+        
+        // Use proper rounding: add 0.5 before converting to int (round half up)
+        val totalSeconds = ((totalMinutes * 60.0) + 0.5).toInt()
         val hours = totalSeconds / 3600
         val minutes = (totalSeconds % 3600) / 60
         val seconds = totalSeconds % 60
